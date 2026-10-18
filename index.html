@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en" data-theme="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kiki's Loom Room ✦ Apprentice Starlight Weaver</title>
+<meta name="description" content="Meet Kiki, a Moon-Mouseling who weaves fallen stars into warm, glowing night-blankets. A cozy, interactive portfolio.">
+<meta name="theme-color" content="#efe6cf">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%AD%3C/text%3E%3C/svg%3E">
+<link rel="preload" as="image" href="assets/kiki-idle-poster.jpg" fetchpriority="high">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<header class="topbar">
+  <div class="marquee" aria-hidden="true"><div class="marquee-in">
+    <span>✦ Welcome to Kiki's Loom Room ✦ best viewed with a warm drink ✦ you have found a very cozy corner of the web ✦ please do not tickle the scarf ✦</span>
+    <span>✦ Welcome to Kiki's Loom Room ✦ best viewed with a warm drink ✦ you have found a very cozy corner of the web ✦ please do not tickle the scarf ✦</span>
+  </div></div>
+  <nav class="bar" aria-label="Main">
+    <a class="brand" href="#top">🧶 Kiki<span class="blink">✦</span></a>
+    <ul class="links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#story">Story</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#chat">Chat</a></li>
+    </ul>
+    <div class="toggles">
+      <button class="tbtn" id="soundBtn" type="button" aria-pressed="false" aria-label="Sound is off. Turn sound on"><span aria-hidden="true">🔇</span></button>
+      <button class="tbtn" id="themeBtn" type="button" aria-pressed="false" aria-label="Switch to night mode"><span aria-hidden="true">🌙</span></button>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-copy">
+    <p class="badge-new"><span class="blink">NEW!</span> Now hiring: cozy things</p>
+    <h1>Hi, I'm <span class="kname">Kiki</span>.</h1>
+    <p class="tagline">“I stitch the night together, one star at a time.”</p>
+    <p class="greet" id="greet" aria-live="polite">Psst… come closer. I won't bite. I only knit.</p>
+    <div class="cta-row">
+      <a class="btn" href="#story">See my story</a>
+      <button class="btn alt" type="button" id="openChat">Say hi 💬</button>
+    </div>
+    <p class="hint">Tap or click me. Wiggle your mouse. Maybe poke the scarf…</p>
+  </div>
+
+  <div class="win hero-win">
+    <div class="win-title"><span>kiki.exe</span><span class="win-btns" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span></div>
+    <div class="kiki-stage" id="stage">
+      <div class="kiki-tilt" id="tilt">
+        <video id="vIdle" class="kmedia day-only" src="assets/kiki-idle.mp4" poster="assets/kiki-idle-poster.jpg" autoplay muted loop playsinline preload="auto" width="528" height="704" aria-label="Kiki, a pastel-lavender mouse in a knitted scarf, softly fidgeting"></video>
+        <video id="vWink" class="kmedia over day-only" src="assets/kiki-wink.mp4" muted playsinline preload="none" width="528" height="704" aria-hidden="true"></video>
+        <video id="vSneeze" class="kmedia over day-only" src="assets/kiki-sneeze.mp4" playsinline preload="none" width="528" height="704" aria-hidden="true"></video>
+        <img id="nightImg" class="kmedia night-only" src="assets/kiki-night-sm.webp" srcset="assets/kiki-night-sm.webp 421w, assets/kiki-night.webp 842w" sizes="(max-width:700px) 90vw, 420px" width="842" height="1264" alt="Kiki on a pink cloud holding a tiny loom and a star teacup">
+        <button class="scarf" id="scarf" type="button" aria-label="Kiki's scarf (try clicking it three times)"></button>
+      </div>
+      <div class="bubble" id="bubble" role="status" aria-live="polite" hidden></div>
+    </div>
+    <div class="win-status"><span id="status">Kiki is awake ✦</span><span>♥ 100% cozy</span></div>
+  </div>
+</section>
+
+<!-- ABOUT / CHARACTER SHEET -->
+<section class="sec" id="about">
+  <h2 class="h"><span>✦</span> Character Sheet <span>✦</span></h2>
+  <div class="sheet">
+    <article class="card c-name">
+      <h3>1 · Name</h3>
+      <p class="big">Kiki</p>
+      <p class="small">Apprentice Starlight Weaver, Loom Room, top of the Observatory Tree.</p>
+    </article>
+    <article class="card c-what">
+      <h3>2 · What I am</h3>
+      <p>A baby <b>Moon-Mouseling</b>: round, pastel-lavender, oversized fuzzy ears, dewdrop eyes and a scarf spun from moonlight.</p>
+      <p>Shy, affectionate, soft-spoken and very curious. I wrap into a yarn ball when I'm startled, and I <b>sneeze tiny shooting stars</b>.</p>
+    </article>
+    <article class="card c-do">
+      <h3>3 · What I do</h3>
+      <p>I spin beam-threads from fallen stars and weave them into warm, glowing night-blankets, so every forest creature feels safe on cold nights.</p>
+    </article>
+    <article class="card c-story">
+      <h3>4 · My story</h3>
+      <p>I found a cold fallen star in the moss and wrapped it in yarn. It glowed. The Elder Weaver noticed, and now I'm learning the craft up in the Observatory Tree. <a href="#story">Scroll the full tale ↓</a></p>
+    </article>
+    <article class="card c-tag">
+      <h3>5 · Tagline</h3>
+      <p class="big tag">“I stitch the night together, one star at a time.”</p>
+    </article>
+    <aside class="card c-quirks">
+      <h3>Quirks</h3>
+      <ul>
+        <li>🧶 Curls into a yarn ball when embarrassed</li>
+        <li>✨ Sneeze-sparks (harmless, glittery)</li>
+        <li>🧵 Hides spare glowing thread in scarf pockets</li>
+        <li>🪰 Chases fireflies with tiny wooden needles</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="story" id="story" aria-labelledby="storyH">
+  <h2 class="h" id="storyH"><span>✦</span> My Story <span>✦</span></h2>
+  <div class="story-track" id="track">
+    <div class="story-stage">
+      <div class="scene-frame">
+        <!-- Scene 1: star falls -->
+        <svg class="scene s1" viewBox="0 0 400 300" role="img" aria-label="A small star falls from the night sky toward a mossy hill">
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2a5a"/><stop offset="1" stop-color="#6b5a9e"/></linearGradient>
+            <radialGradient id="glow"><stop offset="0" stop-color="#fff3b0"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient>
+          </defs>
+          <rect width="400" height="300" fill="url(#sky)"/>
+          <g fill="#fff" opacity=".8"><circle cx="40" cy="40" r="1.5"/><circle cx="120" cy="25" r="1"/><circle cx="300" cy="50" r="1.5"/><circle cx="350" cy="20" r="1"/><circle cx="220" cy="70" r="1"/><circle cx="70" cy="100" r="1"/></g>
+          <path d="M0 240 Q100 200 200 235 T400 220 V300 H0Z" fill="#3d5a4a"/>
+          <path d="M0 262 Q120 235 240 258 T400 250 V300 H0Z" fill="#2f4a3c"/>
+          <g class="fall"><circle r="22" fill="url(#glow)"/><path d="M0-9 L2.6-3 9-2.8 4-0.9 5.5 5.5 0 2 -5.5 5.5 -4-0.9 -9-2.8 -2.6-3Z" fill="#ffe27a"/></g>
+          <g class="mini" transform="translate(300 232)"><circle cx="0" cy="0" r="9" fill="#a99ad6"/><circle cx="-7" cy="-7" r="5" fill="#a99ad6"/><circle cx="7" cy="-7" r="5" fill="#a99ad6"/><circle cx="-3" cy="-1" r="1.3" fill="#2b2a5a"/><circle cx="3" cy="-1" r="1.3" fill="#2b2a5a"/></g>
+        </svg>
+        <!-- Scene 2: wrapped in yarn -->
+        <svg class="scene s2" viewBox="0 0 400 300" role="img" aria-label="Kiki wraps the cold star in lavender yarn and it begins to glow">
+          <rect width="400" height="300" fill="url(#sky)"/>
+          <path d="M0 240 Q100 200 200 235 T400 220 V300 H0Z" fill="#3d5a4a"/>
+          <path d="M0 262 Q120 235 240 258 T400 250 V300 H0Z" fill="#2f4a3c"/>
+          <circle class="pulse" cx="200" cy="205" r="70" fill="url(#glow)"/>
+          <g class="yarnstar">
+            <path d="M200 170 L211 197 240 199 218 218 225 246 200 231 175 246 182 218 160 199 189 197Z" fill="#ffe27a"/>
+            <g fill="none" stroke="#b9a8ee" stroke-width="3" stroke-linecap="round"><path d="M165 205 Q200 190 236 210"/><path d="M170 222 Q205 205 232 225"/><path d="M180 195 Q205 230 225 205"/></g>
+          </g>
+          <g class="mini" transform="translate(150 240)"><circle r="11" fill="#a99ad6"/><circle cx="-8" cy="-8" r="6" fill="#a99ad6"/><circle cx="8" cy="-8" r="6" fill="#a99ad6"/><circle cx="-4" cy="-1" r="1.5" fill="#2b2a5a"/><circle cx="4" cy="-1" r="1.5" fill="#2b2a5a"/></g>
+        </svg>
+        <!-- Scene 3: Elder Weaver -->
+        <svg class="scene s3" viewBox="0 0 400 300" role="img" aria-label="Two wise glowing eyes peek from a hollow in a great tree: the Elder Weaver notices Kiki's star">
+          <rect width="400" height="300" fill="url(#sky)"/>
+          <path d="M0 250 H400 V300 H0Z" fill="#2f4a3c"/>
+          <path d="M255 300 Q250 190 262 120 Q290 60 340 40 Q330 110 345 300Z" fill="#4b3a45"/>
+          <ellipse cx="300" cy="190" rx="34" ry="46" fill="#1f1830"/>
+          <g class="eyes"><ellipse cx="288" cy="180" rx="6" ry="9" fill="#ffe27a"/><ellipse cx="312" cy="180" rx="6" ry="9" fill="#ffe27a"/><circle cx="288" cy="178" r="2" fill="#1f1830"/><circle cx="312" cy="178" r="2" fill="#1f1830"/></g>
+          <g class="spark-lines" stroke="#ffe27a" stroke-width="2" stroke-linecap="round"><path d="M110 225 L180 195"/><path d="M110 225 L190 215"/></g>
+          <g class="yarnstar" transform="translate(-60 30)"><circle cx="170" cy="190" r="26" fill="url(#glow)"/><path d="M170 175 L174 186 186 187 177 194 180 205 170 199 160 205 163 194 154 187 166 186Z" fill="#ffe27a"/></g>
+          <g class="mini" transform="translate(100 240)"><circle r="11" fill="#a99ad6"/><circle cx="-8" cy="-8" r="6" fill="#a99ad6"/><circle cx="8" cy="-8" r="6" fill="#a99ad6"/><circle cx="-4" cy="-1" r="1.5" fill="#2b2a5a"/><circle cx="4" cy="-1" r="1.5" fill="#2b2a5a"/></g>
+        </svg>
+        <!-- Scene 4: Observatory Tree -->
+        <svg class="scene s4" viewBox="0 0 400 300" role="img" aria-label="The Observatory Tree rises into the stars with a little dome and telescope at the very top">
+          <rect width="400" height="300" fill="url(#sky)"/>
+          <g fill="#fff" class="twinkle"><circle cx="50" cy="40" r="1.6"/><circle cx="110" cy="80" r="1.2"/><circle cx="330" cy="60" r="1.6"/><circle cx="360" cy="130" r="1.2"/><circle cx="80" cy="150" r="1.2"/><circle cx="290" cy="20" r="1.2"/></g>
+          <path d="M0 270 H400 V300 H0Z" fill="#2f4a3c"/>
+          <path d="M185 300 Q190 200 192 130 H208 Q210 200 215 300Z" fill="#4b3a45"/>
+          <ellipse cx="200" cy="105" rx="68" ry="46" fill="#3d5a4a"/>
+          <ellipse cx="160" cy="130" rx="40" ry="28" fill="#44654f"/>
+          <ellipse cx="242" cy="130" rx="40" ry="28" fill="#44654f"/>
+          <path d="M184 72 A16 16 0 0 1 216 72Z" fill="#c9bdf0"/><rect x="184" y="72" width="32" height="8" fill="#a99ad6"/>
+          <path d="M214 58 L244 40" stroke="#ffe27a" stroke-width="4" stroke-linecap="round"/>
+          <rect x="196" y="150" width="8" height="12" rx="2" fill="#ffe27a" class="win-light"/>
+          <g class="beams" stroke="#ffe27a" stroke-width="1.5" stroke-linecap="round" opacity=".7"><path d="M244 40 L300 10"/><path d="M244 40 L330 30"/><path d="M244 40 L310 60"/></g>
+        </svg>
+        <!-- Scene 5: today -->
+        <div class="scene s5" role="img" aria-label="Kiki today, weaving a night-blanket with tea in hand">
+          <img src="assets/kiki-night-sm.webp" alt="" loading="lazy" width="421" height="632">
+        </div>
+      </div>
+      <ol class="caps" id="caps">
+        <li class="cap on"><b>Once…</b> a small star slipped off the sky and landed cold in the moss. Kiki found it.</li>
+        <li class="cap"><b>Wrap.</b> Kiki wrapped it in yarn, gently. It started to glow, warm as toast.</li>
+        <li class="cap"><b>Noticed.</b> The Elder Weaver saw the light from the hollow of the great tree, and saw Kiki's talent.</li>
+        <li class="cap"><b>Climb.</b> Kiki moved up to the Observatory Tree to master Starlight Weaving.</li>
+        <li class="cap"><b>Now.</b> Every evening: a luminous blanket, a cup of star-tea, and a curl-up in a velvet-moss teacup. ♥</li>
+      </ol>
+      <div class="dots" id="sdots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      <p class="scrollhint" id="scrollhint">scroll ↓</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="sec" id="projects">
+  <h2 class="h"><span>✦</span> What I Make <span>✦</span></h2>
+  <p class="lead">Three things from the Loom Room. Go on, play with them.</p>
+  <div class="proj-grid">
+
+    <div class="win proj" id="loom">
+      <div class="win-title"><span>blanket_loom.exe</span><span class="win-btns" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span></div>
+      <div class="win-body">
+        <p class="small">Custom light-infused quilts for different sleep moods. Pick a mood, then tap squares to weave.</p>
+        <div class="moods" role="group" aria-label="Sleep mood">
+          <button type="button" class="chip on" data-mood="calm">Calm</button>
+          <button type="button" class="chip" data-mood="dreamy">Dreamy</button>
+          <button type="button" class="chip" data-mood="snug">Snug</button>
+        </div>
+        <div class="loom" id="loomGrid" aria-label="Quilt grid"></div>
+        <div class="row"><button type="button" class="btn sm" id="loomClear">Unravel</button><span class="small" id="loomMsg">0 threads woven</span></div>
+      </div>
+    </div>
+
+    <div class="win proj" id="dots">
+      <div class="win-title"><span>connect_the_dots.exe</span><span class="win-btns" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span></div>
+      <div class="win-body">
+        <p class="small">Stitch star-thread across the sky grid. Tap the dots in order, 1 to 5.</p>
+        <svg id="cdSvg" viewBox="0 0 240 220" class="cd" role="group" aria-label="Constellation puzzle">
+          <rect width="240" height="220" rx="10" fill="#26244f"/>
+          <g id="cdLines" stroke="#ffe27a" stroke-width="3" stroke-linecap="round" fill="none"></g>
+          <g id="cdPts"></g>
+        </svg>
+        <div class="row"><button type="button" class="btn sm" id="cdReset">New sky</button><span class="small" id="cdMsg">Start at dot 1</span></div>
+      </div>
+    </div>
+
+    <div class="win proj" id="tea">
+      <div class="win-title"><span>star_tea_steeper.exe</span><span class="win-btns" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span></div>
+      <div class="win-body">
+        <p class="small">Soothing bedtime drinks with stardust and honey drops. Add, then steep.</p>
+        <svg viewBox="0 0 240 170" class="cup" role="img" aria-label="A star teacup that steams while steeping">
+          <g class="steam" id="steam" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0"><path d="M95 60 q-10-14 0-26 q10-12 0-24"/><path d="M120 60 q-10-14 0-26 q10-12 0-24"/><path d="M145 60 q-10-14 0-26 q10-12 0-24"/></g>
+          <path d="M60 70 H180 Q180 140 120 140 Q60 140 60 70Z" fill="#c9bdf0" stroke="#7a68b0" stroke-width="3"/>
+          <ellipse cx="120" cy="70" rx="60" ry="9" id="teaTop" fill="#c58f5a" stroke="#7a68b0" stroke-width="3"/>
+          <path d="M180 84 q28 0 22 22 q-6 18-26 14" fill="none" stroke="#7a68b0" stroke-width="5" stroke-linecap="round"/>
+          <path d="M120 96 l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1Z" fill="#ffe27a"/>
+          <g id="dust"></g>
+        </svg>
+        <div class="steepbar" aria-hidden="true"><i id="steepFill"></i></div>
+        <div class="row wrap">
+          <button type="button" class="btn sm" id="addHoney">+ honey 🍯 <b id="nHoney">0</b></button>
+          <button type="button" class="btn sm" id="addDust">+ stardust ✨ <b id="nDust">0</b></button>
+          <button type="button" class="btn sm alt" id="steep">Steep</button>
+        </div>
+        <p class="small" id="teaMsg">Your cup is empty. Kiki is hopeful.</p>
+      </div>
+    </div>
+  </div>
+  <p class="small center">Want a toy? Drag the yarn ball <span aria-hidden="true">🧶</span> around the page and watch Kiki's gaze follow it.</p>
+</section>
+
+<!-- CHAT -->
+<section class="sec" id="chat">
+  <h2 class="h"><span>✦</span> Kiki Messenger <span>✦</span></h2>
+  <p class="lead">Kiki is online (and a little shy). Ask about her loom, her scarf, or her favourite star.</p>
+  <div class="win chat-win">
+    <div class="win-title"><span>KikiTheWeaver — Instant Message</span><span class="win-btns" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span></div>
+    <div class="buddy"><span class="dot" aria-hidden="true"></span> <b>KikiTheWeaver</b> <span class="small">· away message: “weaving, back in a stitch ✦”</span></div>
+    <div class="msgs" id="msgs" role="log" aria-live="polite" aria-label="Conversation with Kiki"></div>
+    <div class="chips" id="chips"></div>
+    <form class="send" id="chatForm" autocomplete="off">
+      <label class="sr" for="chatIn">Message to Kiki</label>
+      <input id="chatIn" type="text" maxlength="140" placeholder="Type a message to Kiki…" enterkeyhint="send">
+      <button class="btn sm" type="submit">Send</button>
+    </form>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="contact">
+  <div class="cloud">
+    <h2>Need a cozy blanket or a gentle wish?</h2>
+    <button class="btn big-btn" type="button" id="openForm">🧶 Request a Custom Starlight Weave</button>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="odo-wrap">
+    <span>Threads you've woven here:</span>
+    <div class="odo" id="odo" aria-label="Threads woven counter"></div>
+  </div>
+  <div class="buttons88" aria-hidden="true">
+    <span>Best viewed with tea</span><span>Made by hand + AI</span><span>No moths allowed</span><span>Night owl approved</span>
+  </div>
+  <p class="webring"><a href="#top">← prev star</a> · <b>Cozy Creatures Webring</b> · <a href="#top">next star →</a></p>
+  <details class="credits">
+    <summary>Credits &amp; notes</summary>
+    <ul>
+      <li>Character design, world, writing and code: built for the haX.baby “Baby's First Portfolio” hackathon (Track 2, original character).</li>
+      <li>Kiki artwork and short animation clips: AI-generated (Google Gemini image generation; Magic Hour image-to-video), then cropped and compressed by me.</li>
+      <li>All sounds are synthesized live in your browser with the Web Audio API. No audio files.</li>
+      <li>Story scenes, windows, toys: hand-written SVG, CSS and vanilla JavaScript. No libraries.</li>
+      <li>Kiki is an original character, and any resemblance to other pastel mice is a happy accident.</li>
+    </ul>
+  </details>
+</footer>
+
+<!-- yarn toy + follower -->
+<button class="yarn" id="yarn" type="button" aria-label="Draggable yarn ball toy">🧶</button>
+<div class="follower" id="follower" aria-hidden="true"></div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<dialog id="formDlg" class="cloud-dlg" aria-labelledby="formH">
+  <form method="dialog" id="wishForm" class="wishform">
+    <h2 id="formH">Request a Starlight Weave</h2>
+    <label>Your name <input name="name" required maxlength="40" autocomplete="given-name"></label>
+    <label>Sleep mood
+      <select name="mood"><option>Calm</option><option>Dreamy</option><option>Snug</option></select>
+    </label>
+    <label>Your wish <textarea name="wish" required maxlength="200" rows="3" placeholder="a blanket for rainy-day naps…"></textarea></label>
+    <div class="row"><button class="btn" type="submit">Send to Kiki ✦</button><button class="btn alt" type="button" id="closeForm">Close</button></div>
+    <p class="small" id="formMsg" role="status"></p>
+  </form>
+</dialog>
+
+<noscript><p style="text-align:center;padding:1rem">Kiki needs JavaScript to weave. Please enable it. 🧶</p></noscript>
+<script src="main.js" defer></script>
+</body>
+</html>
