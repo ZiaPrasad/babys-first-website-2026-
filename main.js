@@ -118,17 +118,21 @@ function sizeFx() {
   cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 sizeFx(); addEventListener('resize', sizeFx);
-function star(x, y, r, rot) {
+function thread(x, y, len, rot, w) {
+  const dx = Math.cos(rot), dy = Math.sin(rot);
+  cx.lineWidth = w; cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(x, y);
+  cx.quadraticCurveTo(x + dx * len * .5 - dy * len * .35, y + dy * len * .5 + dx * len * .35, x + dx * len, y + dy * len);
+  cx.stroke();
+}
+function shardShape(x, y, p) {
   cx.beginPath();
-  for (let i = 0; i < 10; i++) {
-    const a = rot + i * Math.PI / 5, rr = i % 2 ? r * .45 : r;
-    cx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
-  }
+  p.poly.forEach((q, i) => { const px = x + Math.cos(q[0] + p.rot) * q[1] * p.r, py = y + Math.sin(q[0] + p.rot) * q[1] * p.r; i ? cx.lineTo(px, py) : cx.moveTo(px, py); });
   cx.closePath(); cx.fill();
 }
 function spawn(x, y, kind) {
-  if (kind === 'trail') parts.push({ x, y, vx: rand(-.4, .4), vy: rand(.2, .9), life: 1, decay: rand(.018, .03), r: rand(3, 6), rot: rand(0, 6), c: pick(['#ffe27a', '#f2c14e', '#fff3b0', '#f4b9c8']), k: 'star' });
-  else parts.push({ x, y, vx: rand(-5, 5), vy: rand(-8, -1), g: .22, life: 1, decay: rand(.008, .014), r: rand(4, 8), rot: rand(0, 6), vr: rand(-.2, .2), c: pick(['#a99ad6', '#f4b9c8', '#ffe27a', '#c9bdf0', '#9be3c6']), k: kind });
+  if (kind === 'trail') parts.push({ x, y, vx: rand(-.4, .4), vy: rand(.2, .9), life: 1, decay: rand(.018, .03), r: rand(4, 8), rot: rand(0, 6.28), c: pick(['#ffe27a', '#f2c14e', '#fff3b0', '#c9bdf0', '#f4b9c8']), k: 'thread', knot: Math.random() < .35 });
+  else parts.push({ x, y, vx: rand(-5, 5), vy: rand(-8, -1), g: .22, life: 1, decay: rand(.008, .014), r: rand(5, 9), rot: rand(0, 6.28), vr: rand(-.2, .2), c: pick(['#a99ad6', '#f4b9c8', '#ffe27a', '#c9bdf0', '#9be3c6']), k: kind === 'yarn' ? 'yarn' : pick(['thread', 'thread', 'shard', 'knot']), knot: Math.random() < .5,
+    poly: [0, 1, 2, 3, 4].map(i => [i * 1.26 + rand(-.3, .3), rand(.6, 1.2)]) });
   if (!fxRun) { fxRun = true; requestAnimationFrame(tick); }
 }
 function burst(x, y, n = 36, kind = 'conf') { if (reduceMotion) n = Math.min(n, 8); for (let i = 0; i < n; i++) spawn(x, y, kind); }
@@ -136,11 +140,12 @@ function tick() {
   cx.clearRect(0, 0, W, H);
   parts = parts.filter(p => p.life > 0 && p.y < H + 20);
   for (const p of parts) {
-    p.x += p.vx; p.y += p.vy; if (p.g) p.vy += p.g; p.life -= p.decay; p.rot += p.vr || .05;
-    cx.globalAlpha = clamp(p.life, 0, 1); cx.fillStyle = p.c;
-    if (p.k === 'star') star(p.x, p.y, p.r, p.rot);
-    else if (p.k === 'yarn') { cx.strokeStyle = p.c; cx.lineWidth = 2; cx.beginPath(); cx.arc(p.x, p.y, p.r, p.rot, p.rot + 4); cx.stroke(); }
-    else { cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot); cx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); cx.restore(); }
+    p.x += p.vx; p.y += p.vy; if (p.g) p.vy += p.g; p.life -= p.decay; p.rot += p.vr || .03;
+    cx.globalAlpha = clamp(p.life, 0, 1); cx.fillStyle = p.c; cx.strokeStyle = p.c;
+    if (p.k === 'thread') { thread(p.x, p.y, p.r * 2.4, p.rot, 2); if (p.knot) { cx.beginPath(); cx.arc(p.x, p.y, 1.8, 0, 6.3); cx.fill(); } }
+    else if (p.k === 'yarn') { cx.lineWidth = 2; cx.beginPath(); cx.arc(p.x, p.y, p.r, p.rot, p.rot + 4); cx.stroke(); }
+    else if (p.k === 'shard') shardShape(p.x, p.y, p);
+    else { cx.lineWidth = 2; cx.beginPath(); cx.arc(p.x, p.y, p.r * .38, 0, 6.3); cx.stroke(); cx.beginPath(); cx.arc(p.x, p.y, 1.2, 0, 6.3); cx.fill(); }
   }
   cx.globalAlpha = 1;
   if (parts.length) requestAnimationFrame(tick); else { fxRun = false; cx.clearRect(0, 0, W, H); }
@@ -160,9 +165,9 @@ function setTheme(t, silent) {
   const b = $('#themeBtn'), night = t === 'night';
   b.setAttribute('aria-pressed', String(night));
   b.setAttribute('aria-label', night ? 'Switch to day mode' : 'Switch to night mode');
-  $('span', b).textContent = night ? '☀️' : '🌙';
+  $('span', b).textContent = night ? '☕' : '🕯️';
   $('meta[name=theme-color]').setAttribute('content', night ? '#1c1a3d' : '#efe6cf');
-  $('#status').textContent = night ? 'Kiki is sleepy… and weaving ✦' : 'Kiki is awake ✦';
+  $('#status').textContent = night ? 'Kiki is sleepy… and weaving ~' : 'Kiki is awake ~';
   if (!silent) { say(night ? 'Ooh, the stars are out…' : 'Good morning! Tea time.'); burst(innerWidth / 2, 120, 14, 'trail'); sparkleSound(); }
 }
 $('#themeBtn').addEventListener('click', () => setTheme(root.dataset.theme === 'day' ? 'night' : 'day'));
@@ -191,7 +196,7 @@ function greeting() {
     `${n ? n + '! ' : ''}You came back! That's visit number ${mem.visits}. My scarf is extra fluffy today.`,
     `Hello again${n ? ', ' + n : ''}. I saved you the warm corner of the loom.`
   ];
-  return lines[mem.visits % lines.length] + (mem.egg ? ' (I remember you found my scarf secret ✦)' : '');
+  return lines[mem.visits % lines.length] + (mem.egg ? ' (I remember you found my scarf secret ~)' : '');
 }
 $('#greet').textContent = greeting();
 
@@ -236,7 +241,7 @@ $('#scarf').addEventListener('click', e => {
   sparkleSound(); bump(5);
   toast('🎉 You found Kiki\'s secret! Threads +5');
   if (!mem.egg) { mem.egg = true; store.set('mem', mem); }
-  $('#status').textContent = 'Kiki sneezed a star ✦';
+  $('#status').textContent = 'Kiki sneezed a star ~';
 });
 
 // ---------- story scroll ----------
@@ -271,7 +276,7 @@ $('#scarf').addEventListener('click', e => {
     grid.appendChild(b);
   }
   const upd = () => {
-    msg.textContent = n >= 24 ? `A ${mood} blanket! Kiki approves ✦` : `${n} thread${n === 1 ? '' : 's'} woven`;
+    msg.textContent = n >= 24 ? `A ${mood} blanket! Kiki approves ~` : `${n} thread${n === 1 ? '' : 's'} woven`;
   };
   grid.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
@@ -294,20 +299,22 @@ $('#scarf').addEventListener('click', e => {
   });
 }
 
-// ---------- project 2: constellation connect-the-dots ----------
+// ---------- project 2: stitch the Sky Needle (constellation) ----------
 {
   const NS = 'http://www.w3.org/2000/svg';
   const pts = $('#cdPts'), lines = $('#cdLines'), msg = $('#cdMsg'), svg = $('#cdSvg');
+  const BASE = [[36, 182], [92, 130], [146, 80], [196, 36], [214, 106], [150, 152]];
+  const N = BASE.length;
   let next = 1, coords = [];
   function mk(tag, attrs) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
-  function line(a, b) { const l = mk('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1] }); lines.appendChild(l); }
+  function line(a, b) { lines.appendChild(mk('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1] })); }
   function reset() {
     pts.textContent = ''; lines.textContent = ''; next = 1;
-    const rot = rand(0, Math.PI * 2), cxp = 120, cyp = 110, R = 78;
-    coords = [0, 2, 4, 1, 3].map(k => { const a = rot - Math.PI / 2 + k * 2 * Math.PI / 5; return [cxp + R * Math.cos(a), cyp + R * Math.sin(a)]; });
+    const flip = Math.random() < .5;
+    coords = BASE.map(c => [(flip ? 240 - c[0] : c[0]) + rand(-5, 5), c[1] + rand(-5, 5)]);
     coords.forEach((c, i) => {
       const g = mk('g', { class: 'pt', tabindex: '0', role: 'button', 'aria-label': `Dot ${i + 1}`, transform: `translate(${c[0].toFixed(1)} ${c[1].toFixed(1)})` });
-      g.appendChild(mk('circle', { r: 14, fill: '#c9bdf0' }));
+      g.appendChild(mk('circle', { r: 13, fill: '#c9bdf0' }));
       const t = mk('text', { 'text-anchor': 'middle', y: 4 }); t.textContent = i + 1; g.appendChild(t);
       const hit = () => tap(i, g);
       g.addEventListener('click', hit);
@@ -317,12 +324,17 @@ $('#scarf').addEventListener('click', e => {
     msg.textContent = 'Start at dot 1';
   }
   function tap(i, g) {
-    if (next > 5) return;
+    if (next > N) return;
     if (i + 1 !== next) { g.classList.remove('shake'); void g.getBoundingClientRect(); g.classList.add('shake'); msg.textContent = `Not that one. Try dot ${next}`; return; }
     g.classList.add('done'); bump();
     if (next > 1) line(coords[next - 2], coords[i]);
-    if (next === 5) { line(coords[4], coords[0]); msg.textContent = 'A star! Kiki hung it in the sky ✦'; sparkleSound(); toast('✦ Constellation complete: "The Little Lantern"'); const r = svg.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 30, 'trail'); }
-    else msg.textContent = `Nice. Now dot ${next + 1}`;
+    if (next === N) {
+      const [x, y] = coords[N - 1];
+      lines.appendChild(mk('path', { d: `M${x} ${y} q16 14 4 28 q-12 10 -22 0`, stroke: '#c9bdf0', 'stroke-dasharray': '0' }));
+      msg.textContent = 'The Sky Needle! Kiki stitched it into the night ~'; sparkleSound();
+      toast('~ Constellation complete: "The Sky Needle"');
+      const r = svg.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 30, 'trail');
+    } else msg.textContent = `Nice. Now dot ${next + 1}`;
     next++;
   }
   $('#cdReset').addEventListener('click', reset);
@@ -359,7 +371,7 @@ $('#scarf').addEventListener('click', e => {
       if (p < 1) return requestAnimationFrame(step);
       steeping = false;
       const name = honey > dust ? 'Honey Moon Milk' : dust > honey ? 'Stardust Lullaby Tea' : 'Starlit Honey Brew';
-      msg.textContent = `${name} is ready ✦ Sleep tight.`; sparkleSound(); bump(2);
+      msg.textContent = `${name} is ready ~ Sleep tight.`; sparkleSound(); bump(2);
       const r = $('.cup').getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 40, 14, 'trail');
       honey = dust = 0; $('#nHoney').textContent = 0; $('#nDust').textContent = 0; dustG.textContent = ''; tint(); setTimeout(() => { fill.style.width = '0'; }, 1200);
     })(t0);
@@ -386,10 +398,10 @@ $('#scarf').addEventListener('click', e => {
     [/colou?r|favou?rite/i, () => ["Lavender, always. Then moonlight-gold. Then the pink of a sunset cloud."]],
     [/how are you|how.*feel|you ok|you okay/i, () => [`I'm cozy, ${nm()}. Warm tea, soft yarn. How are you?`]],
     [/\b(sad|cold|lonely|scared|tired|anxious|cry|bad day)\b/i, () => [`Oh ${nm()}… come here. You can have the warm end of my scarf. Cold nights end, I promise. 🧣`]],
-    [/\b(sleep|goodnight|good night|night|bed|bye|goodbye)\b/i, () => [`Goodnight ${nm()}. I'll weave you a calm one. Sweet dreams ✦`, `Sleep tight, ${nm()}. The stars are on watch.`]],
+    [/\b(sleep|goodnight|good night|night|bed|bye|goodbye)\b/i, () => [`Goodnight ${nm()}. I'll weave you a calm one. Sweet dreams ~`, `Sleep tight, ${nm()}. The stars are on watch.`]],
     [/thank/i, () => ["You're so welcome! Thank you for visiting. It makes the Loom Room glow."]],
     [/joke|funny/i, () => ["Why did the star go to knitting class? To learn how to hang by a thread! …I'll see myself out. *rolls into a yarn ball*"]],
-    [/hire|commission|custom|order|request|work with/i, () => ["Oh! A custom blanket? Tap the pink cloud button at the bottom, tell me the sleep mood and your wish, and I'll get weaving ✦"]],
+    [/hire|commission|custom|order|request|work with/i, () => ["Oh! A custom blanket? Tap the pink cloud button at the bottom, tell me the sleep mood and your wish, and I'll get weaving ~"]],
     [/real|robot|\bai\b|bot|human/i, () => ["I'm an invented character, made by a human with a little AI help for the pictures. The loom and the stars are all pretend, but the coziness is real."]],
     [/age|old|baby/i, () => ["I'm a baby Moon-Mouseling. Very young, very fluffy, still learning to weave straight lines."]],
     [/love|cute|adorable|sweet/i, () => ["*hides face in scarf* …thank you. Now I'm all pink. 💗"]],
@@ -484,7 +496,7 @@ $('#scarf').addEventListener('click', e => {
     if (CONFIG.formEndpoint) {
       try { const r = await fetch(CONFIG.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) }); sent = r.ok; } catch { sent = false; }
     }
-    msg.textContent = sent ? 'Sent! Kiki is already threading her needle ✦' : 'Kiki tucked your wish into her scarf pocket (saved on this device) ✦';
+    msg.textContent = sent ? 'Sent! Kiki is already threading her needle ~' : 'Kiki tucked your wish into her scarf pocket (saved on this device) ~';
     burst(innerWidth / 2, innerHeight / 2, 40, 'conf'); sparkleSound(); bump(3);
     setTimeout(() => { if (dlg.close) dlg.close(); f.reset(); msg.textContent = ''; }, 2400);
   });
