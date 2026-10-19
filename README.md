@@ -1,85 +1,70 @@
-# Kiki's Loom Room
+# Kiki’s Loom Room
 
-A cozy, interactive character portfolio for **Kiki**, a baby Moon-Mouseling who spins fallen stars into glowing night-blankets. It's a personal website about her (who she is, what she makes, her story and her workspace) with playful things to poke, not a game.
-Built for the haX **Baby's First Website** hackathon, Track 2 (Your Own Baby).
+Hi, I’m Zia. I made this site for haX.baby’s **Baby’s First Website** hackathon (Track 2: Your Own Baby).
 
-Plain HTML, CSS and JavaScript, no build step. The only dependency is Three.js (vendored in `js/vendor/`), lazy-loaded when a visitor steps into the 3D Loom Room.
+Kiki is a baby Moon-Mouseling and an apprentice Starlight Weaver. She lives in a teacup with velvet moss, collects fallen stars, and turns them into blankets for sleepy creatures. This is her little corner of the internet: you can meet her, see what she makes, follow her story, and wander around her loom room. It’s a portfolio with things to poke at, not a browser game.
 
 ## Run it
 
-Any static server works. Browsers block some features on `file://`, so don't double-click `index.html`.
+There’s no build step. From this folder, start any static server:
 
 ```bash
-python3 -m http.server 8000      # then open http://localhost:8000
-# or:  npx serve .
+python3 -m http.server 8000
 ```
 
-## Deploy (pick one)
+Then open <http://localhost:8000>. Don’t open `index.html` directly; a few browser features need the site to be served over HTTP.
 
-- **Netlify Drop:** open https://app.netlify.com/drop and drag this whole folder onto the page.
-- **Vercel:** `npx vercel --prod` from this folder, or import the GitHub repo (framework preset: "Other", no build command, output directory `.`).
-- **GitHub Pages:** push to GitHub, then Settings, Pages, deploy from the `main` branch, root folder.
-- **Cloudflare Pages:** connect the repo, no build command, output directory `/`.
+The site is plain HTML, CSS and JavaScript. Three.js is included in `js/vendor/` and only loads when you enter the 3D Loom Room.
 
-## What's inside
+## Have a look around
 
-| Feature | Where |
-|---|---|
-| Enter screen that unlocks sound, "Enter quietly" option | `index.html`, `js/main.js` |
-| Synthesized lullaby, crickets by night, birdsong by day, click sounds, **mute switch** (button or `M` key) | `js/audio.js` |
-| Day ("Pastel Morning Tea") and Night ("Deep Starlight") themes, clock-aware default | `js/theme.js` |
-| Stardust and glowing-thread cursor trail, bursts, confetti | `js/stardust.js` |
-| Tilting live Kiki, playable title letters, two hidden secrets | `js/hero.js` |
-| Three project toys: Blanket Loom, Constellation Connect-the-Dots, Star-Tea Steeper | `js/projects.js` |
-| Scroll-stitched story with a needle riding the thread | `js/story.js` |
-| Yarn-ball playpen with physics, Kiki chases it | `js/playpen.js` |
-| Cloud-shaped wish form | `js/contact.js` |
-| Wish Wall guestbook (optional, needs a free Supabase table) | `js/guestbook.js` |
-| Responsive personality ("chaos mode") | `js/responsive.js` |
-| Visit odometer, returning-visitor greeting | `js/main.js` |
-| 3D Loom Room: large stage, damped orbit/zoom/pinch/arrow-key camera, on-screen camera buttons, draggable yarn that Kiki chases, speech bubbles, swinging lantern + moon, weaving shuttle (Three.js, lazy-loaded, mobile-lite mode) | `js/room.js`, `js/room3d.js` |
-| Kiki's Yarn Chase: artwork pops up when yarn is pulled, has its own card, and the Playpen hands off to the 3D room | `assets/kiki-yarn-chase*.webp`, `js/room.js`, `js/playpen.js` |
-| Talk to Kiki (hand-written, no API) | `js/chat.js` |
-| Kiki's cozy level + messy little work list (five things, 20% each) | `js/cozy.js` |
-| Section navigation: smooth scroll, active-section highlight, bottom-sheet menu on phones | `js/main.js`, `css/styles.css` |
-| Immersive story (parallax, motes, tappable memories) | `js/immersive.js` |
+- In **My stuff**, try the Blanket Loom, connect the stars, or make some star-tea.
+- The **story** has five illustrated scenes. Scroll through it, or tap a scene to hear Kiki’s thoughts.
+- Step into the **Loom Room** to look around and click the things on her workbench. If 3D isn’t available, there’s a picture instead.
+- Pull the yarn or roll it around the playpen and see if Kiki follows.
+- You can talk to Kiki, check her little work list, or stay for bedtime.
 
-### The secrets (Easter eggs)
+A couple of things are hidden: tap Kiki’s scarf three times, or boop her nose four times quickly.
 
-1. Click Kiki's **scarf** three times. She says two things, then the star knot comes loose and she sneezes shooting stars.
-2. **Boop her nose** four times fast. She curls into a yarn ball.
+## A few details
 
-## Turn on the two optional extras
+The sound is made in the browser with the Web Audio API. Use the Sound button—or press `M`—to mute it. The day/night theme follows your local clock the first time you visit; after that, your choice is remembered in this browser.
 
-Both are off until you fill in a value in `index.html`, and neither shows a broken UI while off.
+The visit count, secrets, chat name and cozy progress are also stored in this browser. They aren’t shared between visitors. Kiki’s chat is written by hand; it doesn’t call an AI service or send what you type anywhere.
 
-**1. Wishes in your inbox (cloud form).** Create a free form at https://formspree.io, then set:
+The wish form doesn’t send anything until you add a Formspree endpoint. The guestbook stays hidden until you connect a Supabase project. Both are optional; the page works without them.
+
+## If you want to turn on the extras
+
+### Send wishes to an inbox
+
+Create a form at <https://formspree.io>, then put its endpoint in `index.html`:
 
 ```html
 <script>window.KIKI_FORM_ENDPOINT = 'https://formspree.io/f/yourFormId';</script>
 ```
 
-Until you do, the form is honest about it: it shows "Message tucked away" and says nothing was sent.
+Without an endpoint, the page tells visitors their wish wasn’t sent.
 
-**2. The Wish Wall (live guestbook).**
+### Show the Wish Wall
 
-1. Create a free project at https://supabase.com.
-2. In the SQL editor, run `supabase.sql` from this folder.
-3. In Project Settings, API, copy the **Project URL** and the **anon public** key (the anon key is meant to be public) into:
+1. Create a project at <https://supabase.com>.
+2. Run `supabase.sql` in its SQL editor.
+3. Copy the project URL and **anon public** key from Project Settings → API into `index.html`:
 
 ```html
-<script>window.KIKI_GUESTBOOK = { url: 'https://xxxx.supabase.co', anonKey: 'eyJ...', table: 'guestbook' };</script>
+<script>window.KIKI_GUESTBOOK = { url: 'https://xxxx.supabase.co', anonKey: 'your-anon-public-key', table: 'guestbook' };</script>
 ```
 
-The wall then appears on the page. Messages are shown as plain text, limited to 140 characters, with a 30-second cooldown and a honeypot against bots. Delete unwanted rows from the Supabase table editor.
+The guestbook limits messages to 140 characters and applies a 30-second cooldown. They’re displayed as text. You can remove a message from the Supabase table if needed.
 
 ## Before you submit
 
-- Replace the AI-art credit in the footer (`index.html`, "Credits") with the exact tool names you used for the image and the clips.
-- The Magic Hour clips had a watermark that was cropped out. Check that your Magic Hour plan allows that, or re-export the clips without the watermark.
-- Set `og:image` in `<head>` to the full URL of `assets/kiki.png` on your live site so link previews work.
-- Test on a real phone.
+- Make sure the credits in the footer match the tools used for the art and clips.
+- The Magic Hour clips had a watermark cropped out. Check that your plan allows this, or export the clips again without it.
+- Use the full deployed URL for `og:image` so link previews can find Kiki’s picture.
+- Try the site on a real phone, especially the Loom Room.
 
 ## Credits
 
-Kiki's world and story: Zia Vijay Prasad. Story artwork and illustration: AI-generated, edited and arranged by Zia (add the exact tool name in the footer Credits once confirmed). Animated clips: AI image-to-video by Magic Hour. Sound: synthesized live with the Web Audio API. Fonts: Bagel Fat One, Nunito, Silkscreen and Caveat (Google Fonts, SIL OFL). Code written with help from Claude, an AI coding assistant.
+Kiki’s world and story are by Zia Vijay Prasad. The illustrations were generated with ChatGPT, then edited and arranged by Zia. The animated clips were made with Magic Hour and trimmed by Zia. The sound is synthesized in the browser. The site uses Three.js (MIT) and the Bagel Fat One, Nunito, Silkscreen and Caveat fonts from Google Fonts (SIL Open Font License). Code was written with help from Claude.
