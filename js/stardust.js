@@ -36,7 +36,7 @@
     o = o || {};
     var cols = palette(kind);
     if (kind === 'trail') {
-      add({ k: 'star', x: x + (Math.random() - 0.5) * 8, y: y + (Math.random() - 0.5) * 8, vx: (Math.random() - 0.5) * 24, vy: 10 + Math.random() * 26, life: 0, max: 0.7 + Math.random() * 0.5, size: 2 + Math.random() * 3.5, c: pick(cols), rot: Math.random() * 3, vr: (Math.random() - 0.5) * 3, grav: 30 });
+      add({ trail: true, k: 'star', x: x + (Math.random() - 0.5) * 8, y: y + (Math.random() - 0.5) * 8, vx: (Math.random() - 0.5) * 24, vy: 10 + Math.random() * 26, life: 0, max: 0.7 + Math.random() * 0.5, size: 2 + Math.random() * 3.5, c: pick(cols), rot: Math.random() * 3, vr: (Math.random() - 0.5) * 3, grav: 30 });
       return;
     }
     var speed = o.speed || 220;
@@ -108,9 +108,20 @@
   }
   function run() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
 
-  // Trail follows mouse, pen and touch drags.
+  /* The trail is a mouse/pen effect. Touch never makes trail particles, and the thread and
+     sparkles stop the moment the pointer leaves the window, the tab hides or the window loses focus. */
+  var inside = false;
+  function leave() {
+    inside = false; trail.length = 0; lastSpawn.x = lastSpawn.y = -999;
+    for (var i = 0; i < parts.length; i++) {          // let the last few sparkles fade out fast
+      var p = parts[i];
+      if (p.trail) p.max = Math.min(p.max, p.life + 0.18);
+    }
+    if (parts.length) run();                           // otherwise nothing is left and the loop is already idle
+  }
   window.addEventListener('pointermove', function (e) {
-    if (reduce.matches || document.body.classList.contains('is-splash')) return;
+    if (e.pointerType === 'touch' || reduce.matches || document.body.classList.contains('is-splash')) return;
+    inside = true;
     trail.push({ x: e.clientX, y: e.clientY, t: performance.now() });
     if (trail.length > 40) trail.shift();
     var dx = e.clientX - lastSpawn.x, dy = e.clientY - lastSpawn.y;
@@ -120,10 +131,15 @@
     }
     run();
   }, { passive: true });
+  document.documentElement.addEventListener('pointerleave', leave, { passive: true });
+  document.addEventListener('mouseout', function (e) { if (!e.relatedTarget) leave(); }, { passive: true });
+  window.addEventListener('blur', leave);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) leave(); });
+  window.addEventListener('pagehide', leave);
 
-  // A tiny puff on every tap or click.
+  // A tiny puff on every mouse click (taps on touch screens stay quiet).
   window.addEventListener('pointerdown', function (e) {
-    if (document.body.classList.contains('is-splash')) return;
+    if (e.pointerType === 'touch' || document.body.classList.contains('is-splash')) return;
     burst(e.clientX, e.clientY, 'stars', 6, { speed: 110 });
   }, { passive: true });
 

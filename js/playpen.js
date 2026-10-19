@@ -92,6 +92,17 @@
     if (visible) raf = requestAnimationFrame(frame);
   }
 
+  /* ---- after the first throw, Kiki gets tangled and offers the way into the 3D room ---- */
+  var tangled = false;
+  function tangleSoon() {
+    if (tangled) return; tangled = true;
+    setTimeout(function () {
+      var box = $('pen-tangle'); if (!box) return;
+      box.hidden = false; var nx = $('pen-next'); if (nx) nx.hidden = true; kiki.classList.add('is-tangled'); K.audio.sfx.giggle();
+      setTimeout(function () { kiki.classList.remove('is-tangled'); }, 2200);
+    }, 1700);
+  }
+
   /* ---- input ---- */
   function point(e) { var r = pen.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
 
@@ -118,7 +129,7 @@
       var dt = (now - first.t) / 1000;
       s.vx = clamp((s.x - first.x) / dt, -1400, 1400); s.vy = clamp((s.y - first.y) / dt, -1400, 1400);
     }
-    K.audio.sfx.pluck(4); wake();
+    K.audio.sfx.pluck(4); wake(); tangleSoon();
   }
   ball.addEventListener('pointerup', release);
   ball.addEventListener('pointercancel', release);

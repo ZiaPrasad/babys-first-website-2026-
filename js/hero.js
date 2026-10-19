@@ -80,17 +80,22 @@
     }, { threshold: 0.05 }).observe(stage);
   }
 
-  // Tilt toward the pointer. A finger drag does the same on touch screens.
+  // Tilt toward the mouse pointer (not on touch screens).
   function setTilt(x, y) {
     tilt.style.setProperty('--rx', (y * -7).toFixed(2) + 'deg');
     tilt.style.setProperty('--ry', (x * 9).toFixed(2) + 'deg');
   }
   if (!reduce.matches) {
     stage.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'touch') return;
       var r = stage.getBoundingClientRect();
       setTilt(((e.clientX - r.left) / r.width - 0.5) * 2, ((e.clientY - r.top) / r.height - 0.5) * 2);
     });
     stage.addEventListener('pointerleave', function () { setTilt(0, 0); });
+    // Pointer left the window or the tab went away: Kiki stops looking at the cursor.
+    document.documentElement.addEventListener('pointerleave', function () { setTilt(0, 0); });
+    window.addEventListener('blur', function () { setTilt(0, 0); });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) setTilt(0, 0); });
   }
 
   /* ---------- face: boops, and the yarn-ball curl ---------- */

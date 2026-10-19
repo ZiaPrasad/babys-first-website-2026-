@@ -67,6 +67,8 @@
       for (var c = 0; c < COLS; c++) {
         var cell = document.createElement('i');
         cell.className = 'cell'; cell.dataset.c = c; cell.dataset.r = r;
+        cell.setAttribute('role', 'button'); cell.tabIndex = (r === 0 && c === 0) ? 0 : -1;
+        cell.setAttribute('aria-label', 'Re-thread square, row ' + (r + 1) + ' column ' + (c + 1));
         cell.style.setProperty('--d', ((c + r) * 38) + 'ms');
         blanket.appendChild(cell); cells.push(cell); idx.push(0);
       }
@@ -79,7 +81,7 @@
       mood = MOODS.filter(function (m) { return m.id === id; })[0] || MOODS[0];
       cells.forEach(function (cell, i) { idx[i] = mood.pattern(+cell.dataset.c, +cell.dataset.r) % 4; });
       paint(); replay();
-      blanket.setAttribute('aria-label', 'Woven blanket pattern for a ' + mood.label.toLowerCase() + ' night');
+      blanket.setAttribute('aria-label', 'Woven blanket pattern for a ' + mood.label.toLowerCase() + ' night. Arrow keys move between squares, Enter re-threads one.');
       noteEl.textContent = mood.note;
       if (user) {
         mood.notes.forEach(function (n, i) { setTimeout(function () { K.audio.sfx.pluck(n + 3); }, i * 110); });
@@ -89,14 +91,32 @@
 
     var group = K.radioGroup($('loom-moods'), MOODS, 'sleepy', setMood);
 
-    blanket.addEventListener('click', function (e) {
-      var cell = e.target.closest('.cell');
-      if (!cell) return;
+    /* One Tab stop for the whole blanket: arrow keys move between squares, Enter or Space re-threads the one in focus. */
+    function rethread(cell) {
       var i = cells.indexOf(cell);
       idx[i] = (idx[i] + 1) % 4;
       cell.style.backgroundColor = mood.colors[idx[i]];
       cell.classList.remove('is-pop'); void cell.offsetWidth; cell.classList.add('is-pop');
       K.audio.sfx.pluck(+cell.dataset.c % 9);
+      if (K.cozy) K.cozy.add('loom');   // keyboard re-threads count too (clicks are also caught by cozy.js, which is harmless)
+    }
+    blanket.addEventListener('click', function (e) {
+      var cell = e.target.closest('.cell');
+      if (cell) rethread(cell);
+    });
+    blanket.addEventListener('keydown', function (e) {
+      var cell = e.target.closest('.cell'); if (!cell) return;
+      var i = cells.indexOf(cell), c = i % COLS, r = (i / COLS) | 0, n = -1;
+      if (e.key === 'ArrowRight') n = c < COLS - 1 ? i + 1 : i;
+      else if (e.key === 'ArrowLeft') n = c > 0 ? i - 1 : i;
+      else if (e.key === 'ArrowDown') n = r < ROWS - 1 ? i + COLS : i;
+      else if (e.key === 'ArrowUp') n = r > 0 ? i - COLS : i;
+      else if (e.key === 'Home') n = r * COLS;
+      else if (e.key === 'End') n = r * COLS + COLS - 1;
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rethread(cell); return; }
+      if (n < 0) return;
+      e.preventDefault();
+      cells.forEach(function (x) { x.tabIndex = -1; }); cells[n].tabIndex = 0; cells[n].focus();
     });
 
     $('loom-shuffle').addEventListener('click', function () {

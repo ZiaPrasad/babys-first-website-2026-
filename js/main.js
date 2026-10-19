@@ -63,7 +63,7 @@
   })();
 
   /* ---------- secrets counter in the footer ---------- */
-  function showSecrets() { $('secrets').textContent = 'Secrets found: ' + K.secrets.count() + ' of ' + K.secrets.total; }
+  function showSecrets() { $('secrets').textContent = 'Little secrets found: ' + K.secrets.count() + ' of ' + K.secrets.total; }
   showSecrets(); K.secrets.onChange(showSecrets);
 
   /* ---------- sound toggle ---------- */
@@ -95,7 +95,8 @@
     body.classList.remove('is-splash');
     shell.forEach(function (el) { if (el) el.inert = false; });
     setTimeout(function () { splash.hidden = true; }, 600);
-    $('main').focus({ preventScroll: true });
+    // leave keyboard focus at the very top so the first Tab reaches the skip link and the section menu
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     setTimeout(function () { K.hero.welcome(visits); }, 900);
   }
   $('enter-sound').addEventListener('click', function () { enter(true); });
@@ -127,20 +128,69 @@
     });
   });
 
-  /* ---------- nav: mark the section you are in ---------- */
-  if ('IntersectionObserver' in window) {
-    var links = {};
-    Array.prototype.forEach.call(document.querySelectorAll('.topbar__nav a'), function (a) { links[a.getAttribute('href').slice(1)] = a; });
-    var nio = new IntersectionObserver(function (en) {
-      en.forEach(function (e) {
-        var a = links[e.target.id];
-        if (!a) return;
-        if (e.isIntersecting) {
-          Object.keys(links).forEach(function (k) { links[k].removeAttribute('aria-current'); });
-          a.setAttribute('aria-current', 'true');
-        }
-      });
-    }, { rootMargin: '-40% 0px -55% 0px' });
-    Object.keys(links).forEach(function (id) { var s = $(id); if (s) nio.observe(s); });
+  /* ---------- navigation: smooth scroll, "you are here", and the compact menu ---------- */
+  var topbar = $('topbar'), navEl = $('topnav'), toggle = $('nav-toggle'), scrim = $('nav-scrim');
+  var ORDER = ['top', 'sheet', 'projects', 'story', 'room', 'play', 'bedtime', 'wish'];
+  var NAMES = { top: 'home', sheet: 'about', projects: 'my stuff', story: 'my story', room: 'loom room', play: 'yarn play', bedtime: 'bedtime', wish: 'contact' };
+  var navLinks = {};
+  Array.prototype.forEach.call(navEl.querySelectorAll('a'), function (a) { navLinks[a.getAttribute('href').slice(1)] = a; });
+
+  function go(id) {
+    var el = $(id); if (!el) return;
+    var y = id === 'top' ? 0 : Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - topbar.offsetHeight - 10);
+    window.scrollTo({ top: y, behavior: reduce.matches ? 'auto' : 'smooth' });
+    try { history.replaceState(null, '', '#' + id); } catch (e) {}
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
+    el.focus({ preventScroll: true });
   }
+  K.nav = { go: go };
+
+  // Every in-page link ("See what I'm making", "Walk into my Loom Room", the menu...) glides to its section and moves keyboard focus there.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    var id = a.getAttribute('href').slice(1);
+    if (!id || !$(id)) return;
+    e.preventDefault(); go(id);
+    if (a.classList.contains('btn') && K.audio) K.audio.sfx.pluck(6);
+  });
+
+  var navTick = 0, curId = '';
+  function here() {
+    var probe = topbar.offsetHeight + window.innerHeight * 0.28, cur = 'top';
+    ORDER.forEach(function (id) { var el = $(id); if (el && el.getBoundingClientRect().top <= probe) cur = id; });
+    if (window.innerHeight + window.pageYOffset >= document.documentElement.scrollHeight - 4) cur = 'wish';
+    if (cur === curId) return;
+    curId = cur;
+    Object.keys(navLinks).forEach(function (k) { if (k === cur) navLinks[k].setAttribute('aria-current', 'location'); else navLinks[k].removeAttribute('aria-current'); });
+    $('nav-here').textContent = NAMES[cur];
+  }
+  function queueHere() { if (!navTick) navTick = requestAnimationFrame(function () { navTick = 0; here(); }); }
+  window.addEventListener('scroll', queueHere, { passive: true });
+  window.addEventListener('resize', queueHere);
+  here();
+
+  (function menu() {
+    function set(open, refocus) {
+      navEl.classList.toggle('is-open', open); scrim.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      // while the sheet is open the page behind it can't be tabbed into
+      [$('main'), document.querySelector('.footer'), document.querySelector('.marquee'), document.querySelector('.topbar__logo'), $('sound-toggle'), $('theme-toggle')].forEach(function (el) { if (el) el.inert = open; });
+      if (open) { var cur = navEl.querySelector('[aria-current]') || navEl.querySelector('a'); if (cur) cur.focus({ preventScroll: true }); }
+      else if (refocus) toggle.focus({ preventScroll: true });
+    }
+    toggle.addEventListener('click', function () { set(!navEl.classList.contains('is-open'), false); });
+    scrim.addEventListener('click', function () { set(false, true); });
+    navEl.addEventListener('click', function (e) { if (e.target.closest('a')) set(false, false); });
+    document.addEventListener('keydown', function (e) {
+      if (!navEl.classList.contains('is-open')) return;
+      if (e.key === 'Escape') { set(false, true); return; }
+      if (e.key !== 'Tab') return;
+      var f = Array.prototype.slice.call(navEl.querySelectorAll('a')).concat([toggle]);   // the sheet's links, then the Menu button that closes it
+      var i = f.indexOf(document.activeElement);
+      if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
+    });
+    window.matchMedia('(min-width: 1241px)').addEventListener('change', function (m) { if (m.matches) set(false, false); });
+  })();
 })();

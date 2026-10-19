@@ -53,9 +53,9 @@
 
   function deliver(data) {
     var ep = window.KIKI_FORM_ENDPOINT;
-    if (!ep) { if (window.console) console.info('Wish (no endpoint set, not sent):', data); return Promise.resolve(); }
+    if (!ep) { if (window.console) console.info('Wish (no endpoint set, not sent):', data); return Promise.resolve(false); }
     return fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) })
-      .then(function (res) { if (!res.ok) throw new Error('bad status ' + res.status); });
+      .then(function (res) { if (!res.ok) throw new Error('bad status ' + res.status); return true; });
   }
 
   form.addEventListener('submit', function (e) {
@@ -69,8 +69,13 @@
     deliver({
       name: fields.name.el.value.trim(), email: fields.email.el.value.trim(),
       mood: mood.value(), wish: fields.wish.el.value.trim()
-    }).then(function () {
+    }).then(function (sent) {
       status.textContent = '';
+      /* Be honest: with no endpoint configured, nothing leaves the browser. */
+      $('wf-done-title').textContent = sent ? 'Wish received' : '\u2726 MESSAGE TUCKED AWAY \u2726';
+      $('wf-done-text').textContent = sent
+        ? 'Your wish is floating up to the Loom Room. Kiki will start weaving tonight.'
+        : 'Nothing was sent, but Kiki will keep the thought safe.';
       form.hidden = true; done.hidden = false;
       $('wf-done-title').focus();
       K.audio.sfx.chime(true); setTimeout(function () { K.audio.sfx.sparkle(9); }, 300);
