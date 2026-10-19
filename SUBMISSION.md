@@ -2,8 +2,8 @@
 
 Built for haX.baby, Baby's First Website Hackathon 2026.
 
-- **Live site URL:** `<LIVE SITE URL>`
-- **GitHub repository URL:** `<GITHUB REPOSITORY URL>` (commits should be dated 17 to 19 October)
+- **Live site URL:** https://kikiziaa.netlify.app/#top
+- **GitHub repository URL:** https://github.com/ZiaPrasad/babys-first-website-2026- (commits should be dated 17 to 19 October)
 
 ## Character
 
